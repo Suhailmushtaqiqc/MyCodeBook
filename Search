@@ -1,0 +1,42 @@
+ public ActionResult IndexSort(string SearchTerm, string sortby, string searchBy)
+        {
+            if (sortby == null)
+            {
+                if (searchBy == "Description")
+                {
+                    sortby = "Description";
+                }
+            }
+            if (SearchTerm != null)
+            {
+                searchBy = "Name";
+            }
+            ViewBag.sortName = string.IsNullOrEmpty(sortby) ? "Name desc" : "";
+            ViewBag.sortDescription = sortby == "Description" ? "Description desc" : "Description";
+            var category = ecommerceEntitiesDetails.tblCategoryLevelOnes.AsQueryable();
+            if (searchBy == "Name")
+            {
+                category = category.Where(x => x.CategoryName.StartsWith(SearchTerm) || SearchTerm == null);
+            }
+            else
+            {
+                category = category.Where(x => x.Description.StartsWith(SearchTerm) || SearchTerm == null);
+
+            }
+            switch (sortby)
+            {
+                case "Name desc":
+                    category = category.OrderByDescending(x => x.CategoryName);
+                    break;
+                case "Description desc":
+                    category = category.OrderByDescending(x => x.Description);
+                    break;
+                case "Description":
+                    category = category.OrderBy(x => x.Description);
+                    break;
+                default:
+                    category = category.OrderBy(x => x.CategoryName);
+                    break;
+            }
+            return View ("Index", category);
+        }
